@@ -1,13 +1,14 @@
 #include <gtest/gtest.h>
 #include "todo.h"
 
-TEST(TodoListTest, AddSingleTask) {
+TEST(TodoListTest, AddSingleTask)
+{
     TodoList todo;
     todo.init();
     todo.add_task("Write code");
 
     int count;
-    const char** tasks = todo.get_pending_tasks(count);
+    const char **tasks = todo.get_pending_tasks(count);
 
     ASSERT_EQ(count, 1);
     EXPECT_STREQ(tasks[0], "Write code");
@@ -15,7 +16,8 @@ TEST(TodoListTest, AddSingleTask) {
     todo.destroy();
 }
 
-TEST(TodoListTest, AddMultipleTasks) {
+TEST(TodoListTest, AddMultipleTasks)
+{
     TodoList todo;
     todo.init();
     todo.add_task("A");
@@ -23,7 +25,7 @@ TEST(TodoListTest, AddMultipleTasks) {
     todo.add_task("C");
 
     int count;
-    const char** tasks = todo.get_pending_tasks(count);
+    const char **tasks = todo.get_pending_tasks(count);
     ASSERT_EQ(count, 3);
     EXPECT_STREQ(tasks[0], "A");
     EXPECT_STREQ(tasks[1], "B");
@@ -32,17 +34,18 @@ TEST(TodoListTest, AddMultipleTasks) {
     todo.destroy();
 }
 
-TEST(TodoListTest, RemoveTask) {
+TEST(TodoListTest, RemoveTask)
+{
     TodoList todo;
     todo.init();
     todo.add_task("A");
     todo.add_task("B");
     todo.add_task("C");
 
-    todo.remove_task(1);  // Remove "B"
+    todo.remove_task(1); // Remove "B"
 
     int count;
-    const char** tasks = todo.get_pending_tasks(count);
+    const char **tasks = todo.get_pending_tasks(count);
     ASSERT_EQ(count, 2);
     EXPECT_STREQ(tasks[0], "A");
     EXPECT_STREQ(tasks[1], "C");
@@ -50,23 +53,39 @@ TEST(TodoListTest, RemoveTask) {
     todo.destroy();
 }
 
-TEST(TodoListTest, RemoveInvalidIndexThrows) {
+TEST(TodoListTest, RemoveInvalidIndexThrows)
+{
     TodoList todo;
     todo.init();
     todo.add_task("Sample Task");
 
     // TODO: Try removing at invalid indices
     // Example: negative index and out-of-bound index
+    // negative index
+    EXPECT_THROW(todo.remove_task(-1), std::invalid_argument);
+
+    // out-of-bound index (memory-wise)
+    EXPECT_THROW(todo.remove_task(32), std::invalid_argument);
+
+    // out-of-bound index (logic-wise)
+    EXPECT_THROW(todo.remove_task(3), std::invalid_argument);
 
     todo.destroy();
 }
 
-TEST(TodoListTest, AddTooManyTasksThrows) {
+TEST(TodoListTest, AddTooManyTasksThrows)
+{
     TodoList todo;
     todo.init();
 
     // TODO: Add exactly 32 tasks in a loop
+    for (int i = 0; i < 32; i++)
+    {
+        todo.add_task("");
+    }
     // Then try adding a 33rd task and expect an exception
+
+    EXPECT_THROW(todo.add_task(""), std::overflow_error);
 
     todo.destroy();
 }
